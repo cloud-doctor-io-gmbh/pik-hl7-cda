@@ -33,8 +33,8 @@ use PHPHealth\CDA\HasMoodCodeInterface;
 
 /**
  *
- *
  * @author Julien Fastré <julien.fastre@champs-libres.coop>
+ * @author Nick Djerfi <n.djerfi@cloud-doctor.io>
  */
 abstract class AbstractElement implements \PHPHealth\CDA\ElementInterface
 {
@@ -56,7 +56,7 @@ abstract class AbstractElement implements \PHPHealth\CDA\ElementInterface
     protected function createElement(\DOMDocument $doc, array $properties = array())
     {
         /* @var $el DOMElement */
-        $el = $doc->createElement(CDA::NS_CDA.$this->getElementTag());
+        $el = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.$this->getElementTag());
         
         if ($this instanceof HasClassCode) {
             if (! empty($this->getClassCode())) {

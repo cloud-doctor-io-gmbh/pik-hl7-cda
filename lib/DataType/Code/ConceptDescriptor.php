@@ -27,6 +27,8 @@
 namespace PHPHealth\CDA\DataType\Code;
 
 use PHPHealth\CDA\ClinicalDocument as CDA;
+use PHPHealth\CDA\Elements\Qualifier;
+use PHPHealth\CDA\Elements\Translation;
 
 /**
  * A CD represents any kind of concept usually by giving a code defined in a
@@ -39,13 +41,21 @@ use PHPHealth\CDA\ClinicalDocument as CDA;
  *
  *
  * @author Julien Fastré <julien.fastre@champs-libres.coop>
+ * @author Nick Djerfi <n.djerfi@cloud-doctor.io>
  */
 class ConceptDescriptor extends \PHPHealth\CDA\DataType\AnyType
 {
-    
-    private $qualifier;
-        
-    private $translation;
+    /**
+     *
+     * @var Qualifier[]
+     */
+    private $qualifiers = array();
+
+    /**
+     *
+     * @var Translation[]
+     */
+    private $translations = array();
     
     private $codeSystem;
     
@@ -60,6 +70,70 @@ class ConceptDescriptor extends \PHPHealth\CDA\DataType\AnyType
      * @var string
      */
     private $code;
+
+    public function __construct(
+        $code = null,
+        $displayName = null,
+        $codeSystem = null,
+        $codeSystemName = null
+    ) {
+        $this->setCode($code);
+        $this->setDisplayName($displayName);
+        $this->setCodeSystem($codeSystem);
+        $this->setCodeSystemName($codeSystemName);
+    }
+
+    public function getQualifiers()
+    {
+        return $this->qualifiers;
+    }
+
+    public function setQualifiers(array $qualifiers)
+    {
+        $validate = \array_reduce($qualifiers,
+            function ($previous, $item) {
+                if ($previous === false) {
+                    return false;
+                }
+
+                return $item instanceof Qualifier;
+            });
+
+        if ($validate === false) {
+            throw new \UnexpectedValueException(sprintf("The contents of qualifiers "
+                . "should implements %s", Qualifier::class));
+        }
+
+        $this->qualifiers = $qualifiers;
+
+        return $this;
+    }
+
+    public function getTranslations()
+    {
+        return $this->translations;
+    }
+
+    public function setTranslations(array $translations)
+    {
+        $validate = \array_reduce($translations,
+            function ($previous, $item) {
+                if ($previous === false) {
+                    return false;
+                }
+
+                return $item instanceof Translation;
+            });
+
+        if ($validate === false) {
+            throw new \UnexpectedValueException(sprintf("The contents of translations "
+                . "should implements %s", Translation::class));
+        }
+
+        $this->translations = $translations;
+
+        return $this;
+    }
     
     public function getCode()
     {
@@ -151,6 +225,14 @@ class ConceptDescriptor extends \PHPHealth\CDA\DataType\AnyType
         
         if ($this->hasCodeSystemName()) {
             $el->setAttribute("codeSystemName", $this->getCodeSystemName());
+        }
+
+        foreach ($this->getQualifiers() as $qualifier) {
+            $el->appendChild($qualifier->toDOMElement($doc));
+        }
+
+        foreach ($this->getTranslations() as $translation) {
+            $el->appendChild($translation->toDOMElement($doc));
         }
     }
 }

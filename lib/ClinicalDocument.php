@@ -30,11 +30,13 @@ use PHPHealth\CDA\DataType\Quantity\DateAndTime\TimeStamp;
 use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\DataType\Code\CodedValue;
 use PHPHealth\CDA\Elements\Code;
+use PHPHealth\CDA\Elements\SetId;
 use PHPHealth\CDA\Elements\Title;
 use PHPHealth\CDA\Elements\EffectiveTime;
 use PHPHealth\CDA\Elements\Id;
 use PHPHealth\CDA\Elements\ConfidentialityCode;
 use PHPHealth\CDA\Elements\TypeId;
+use PHPHealth\CDA\Elements\VersionNumber;
 use PHPHealth\CDA\RIM\Participation\RecordTarget;
 use PHPHealth\CDA\RIM\Participation\Author;
 use PHPHealth\CDA\RIM\Participation\Custodian;
@@ -110,6 +112,18 @@ class ClinicalDocument
      * @var Id
      */
     private $id;
+
+    /**
+     *
+     * @var SetId
+     */
+    private $setId;
+
+    /**
+     *
+     * @var VersionNumber
+     */
+    private $versionNumber;
     
     /**
      *
@@ -262,6 +276,28 @@ class ClinicalDocument
     {
         $this->id = $id;
         
+        return $this;
+    }
+
+    public function getSetId(): SetId
+    {
+        return $this->setId;
+    }
+
+    public function setSetId(SetId $setId): ClinicalDocument
+    {
+        $this->setId = $setId;
+        return $this;
+    }
+
+    public function getVersionNumber(): VersionNumber
+    {
+        return $this->versionNumber;
+    }
+
+    public function setVersionNumber(VersionNumber $versionNumber): ClinicalDocument
+    {
+        $this->versionNumber = $versionNumber;
         return $this;
     }
 
@@ -425,6 +461,14 @@ class ClinicalDocument
             $doc->appendChild(
                 (new Elements\LanguageCode($this->getLanguageCode()))
                 ->toDOMElement($dom));
+        }
+
+        if ($this->getSetId() !== null) {
+            $doc->appendChild($this->getSetId()->toDOMElement($dom));
+        }
+
+        if ($this->getVersionNumber() !== null) {
+            $doc->appendChild($this->getVersionNumber()->toDOMElement($dom));
         }
         
         // add recordTarget

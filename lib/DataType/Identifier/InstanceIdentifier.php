@@ -54,15 +54,23 @@ class InstanceIdentifier extends AnyType
      * @var string
      */
     private $assigningAuthorityName;
+
+    /**
+     *
+     * @var bool
+     */
+    private $displayable;
     
     public function __construct(
         $root,
         $extension = null,
-        $assigningAuthorityName = null
+        $assigningAuthorityName = null,
+        $displayable = null
     ) {
         $this->root = $root;
         $this->extension = $extension;
         $this->assigningAuthorityName = $assigningAuthorityName;
+        $this->displayable = $displayable;
     }
     
     public function getRoot()
@@ -111,6 +119,22 @@ class InstanceIdentifier extends AnyType
         return $this->getAssigningAuthorityName() !== null;
     }
 
+    public function getDisplayable(): bool
+    {
+        return $this->displayable;
+    }
+
+    public function setDisplayable($displayable): INstanceIdentifier
+    {
+        $this->displayable = $displayable;
+        return $this;
+    }
+
+    public function hasDisplayable()
+    {
+        return $this->displayable !== null;
+    }
+
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
         $el->setAttribute(CDA::NS_CDA."root", $this->getRoot());
@@ -124,6 +148,10 @@ class InstanceIdentifier extends AnyType
                 CDA::NS_CDA."assigningAuthorityName",
                 $this->getAssigningAuthorityName()
             );
+        }
+
+        if ($this->hasDisplayable()) {
+            $el->setAttribute(CDA::NS_CDA."displayable", $this->getDisplayable());
         }
     }
 }

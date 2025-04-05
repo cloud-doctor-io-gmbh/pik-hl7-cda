@@ -112,7 +112,7 @@ class PeriodicIntervalOfTime extends AbstractInterval
         $el->setAttributeNS(CDA::NS_XSI_URI, 'xsi:type', 'PIVL_TS');
         
         if ($this->getInstitutionSpecified() !== null) {
-            $el->setAttribute(CDA::NS_CDA.'institutionSpecified', 
+            $el->setAttribute(CDA::NS_CDA.'institutionSpecified',
                 $this->getInstitutionSpecified() ? 'true' : 'false');
         }
         

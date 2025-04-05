@@ -26,6 +26,8 @@
 
 namespace PHPHealth\CDA\DataType\Name;
 
+use PHPHealth\CDA\ClinicalDocument as CDA;
+
 /**
  * A name for a person, organization, place or thing. A sequence of name parts,
  * such as given name or family name, prefix, suffix, etc. Examples for entity
@@ -66,7 +68,7 @@ class EntityName extends \PHPHealth\CDA\DataType\AnyType
         
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
-        $name = $doc->createElement('name');
+        $name = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'name');
         $name->appendChild($doc->createTextNode($this->getString()));
         
         $el->appendChild($name);

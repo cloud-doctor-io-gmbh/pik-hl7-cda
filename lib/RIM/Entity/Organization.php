@@ -24,9 +24,11 @@
  */
 namespace PHPHealth\CDA\RIM\Entity;
 
+use PHPHealth\CDA\Elements\Addr;
 use PHPHealth\CDA\Elements\Id;
 use PHPHealth\CDA\DataType\Collection\Set;
 use PHPHealth\CDA\DataType\Code\CodedSimple;
+use PHPHealth\CDA\Elements\Telecom;
 
 /**
  * 
@@ -40,11 +42,87 @@ abstract class Organization extends Entity
      * @var CodedSimple
      */
     protected $classCode = 'ORG';
+
+    /**
+     * @var Set|null
+     */
+    protected $telecoms = null;
+
+    /**
+     * @var Set|null
+     */
+    protected $addrs = null;
+
+    /**
+     * @var AsOrganizationPartOf|null
+     */
+    protected $asOrganizationPartOf = null;
     
-    public function __construct(Set $names, Set $ids)
+    public function __construct(
+        Set|null $templateIds = null,
+        Set|null $ids = null,
+        Set|null $names = null,
+        Set|null $telecoms = null,
+        Set|null $addrs = null,
+        AsOrganizationPartOf|null $asOrganizationPartOf = null
+    )
     {
-        $this->setNames($names);
-        $this->setId($ids);
+        $this->templateIds = $templateIds;
+        $this->id = $ids;
+        $this->names = $names;
+        $this->telecoms = $telecoms;
+        $this->addrs = $addrs;
+        $this->asOrganizationPartOf = $asOrganizationPartOf;
+    }
+
+    public function getTelecoms(): Set|null
+    {
+        return $this->telecoms;
+    }
+
+    public function setTelecoms(Set $telecoms): Organization
+    {
+        $telecoms->checkContainsOrThrow(Telecom::class);
+        $this->telecoms = $telecoms;
+        return $this;
+    }
+
+    public function hasTelecoms(): bool
+    {
+        return $this->telecoms !== null;
+    }
+
+    public function getAddrs(): Set|null
+    {
+        return $this->addrs;
+    }
+
+    public function setAddrs(Set $addrs): Organization
+    {
+        $this->addrs->checkContainsOrThrow(Addr::class);
+        $this->addrs->add($addrs);
+        return $this;
+    }
+
+    public function hasAddrs(): bool
+    {
+        return $this->addrs !== null;
+    }
+
+    public function getAsOrganizationPartOf(): AsOrganizationPartOf|null
+    {
+        return $this->asOrganizationPartOf;
+    }
+
+    public function setAsOrganizationPartOf(AsOrganizationPartOf $asOrganizationPartOf): Organization
+    {
+        $this->asOrganizationPartOf = $asOrganizationPartOf;
+        return $this;
+    }
+
+    public function hasAsOrganizationPartOf(): bool
+    {
+        return $this->asOrganizationPartOf !== null;
     }
 
     public function getDefaultClassCode()
@@ -55,15 +133,35 @@ abstract class Organization extends Entity
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
         $el = $this->createElement($doc);
-        
-        foreach ($this->getId() as $idValue) {
-            $idElement = new Id($idValue);
-            $el->appendChild($idElement->toDomElement($doc));
+
+        if ($this->hasTemplateIds()) {
+            $this->getTemplateIds()->setValueToElement($el, $doc);
         }
-        
-        foreach ($this->getNames()->get() as $name) {
-            /* @var $name \PHPHealth\CDA\DataType\Name\EntityName */
-            $name->setValueToElement($el, $doc);
+
+        if ($this->hasIds()) {
+            foreach ($this->getId() as $idValue) {
+                $idElement = new Id($idValue);
+                $el->appendChild($idElement->toDomElement($doc));
+            }
+        }
+
+        if ($this->hasNames()) {
+            foreach ($this->getNames()->get() as $name) {
+                /* @var $name \PHPHealth\CDA\DataType\Name\EntityName */
+                $name->setValueToElement($el, $doc);
+            }
+        }
+
+        if ($this->hasTelecoms()) {
+            $this->telecoms->setValueToElement($el, $doc);
+        }
+
+        if ($this->hasAddrs()) {
+            $this->addrs->setValueToElement($el, $doc);
+        }
+
+        if ($this->hasAsOrganizationPartOf()) {
+            $el->appendChild($this->getAsOrganizationPartOf()->toDOMElement($doc));
         }
         
         return $el;

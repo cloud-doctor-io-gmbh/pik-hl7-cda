@@ -42,10 +42,14 @@ use PHPHealth\CDA\Elements\BirthTime;
 abstract class Person extends LivingSubject
 {
     public function __construct(
+        Set $templateIds = null,
         Set $names = null,
         TimeStamp $birthtime = null,
         CodedValue $administrativeGenderCode = null
     ) {
+        if ($templateIds !== null) {
+            $this->setTemplateIds($templateIds);
+        }
         if ($names !== null) {
             $this->setNames($names);
         }
@@ -66,6 +70,10 @@ abstract class Person extends LivingSubject
     public function toDOMElement(\DOMDocument $doc)
     {
         $el = parent::createElement($doc);
+        //add template ids
+        if ($this->getTemplateIds() !== null) {
+            $this->getTemplateIds()->setValueToElement($el, $doc);
+        }
         //add names
         if ($this->getNames() !== null) {
             $this->getNames()->setValueToElement($el, $doc);

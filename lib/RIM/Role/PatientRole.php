@@ -29,6 +29,8 @@ namespace PHPHealth\CDA\RIM\Role;
 use PHPHealth\CDA\Elements\AbstractElement;
 use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\DataType\Collection\Set;
+use PHPHealth\CDA\Elements\Addr;
+use PHPHealth\CDA\Elements\Telecom;
 use PHPHealth\CDA\RIM\Entity\Patient;
 use PHPHealth\CDA\ClinicalDocument as CDA;
 
@@ -44,16 +46,28 @@ class PatientRole extends Role
      * @var Set
      */
     protected $patientIds;
+
+    /**
+     * @var Set|null
+     */
+    protected $addr;
+
+    /**
+     * @var Set|null
+     */
+    protected $telecom;
     
     /**
      *
-     * @var Patient
+     * @var Patient|null
      */
     protected $patient;
     
     public function __construct(
         Set $ids,
-        Patient $patient
+        Set|null $addr = null,
+        Set|null $telecom = null,
+        Patient|null $patient = null
     ) {
         $this->setPatientIds($ids);
         $this->setPatient($patient);
@@ -96,9 +110,33 @@ class PatientRole extends Role
         return $this->patient;
     }
 
-    public function setPatient(Patient $patient)
+    public function setPatient(Patient|null $patient)
     {
         $this->patient = $patient;
+        return $this;
+    }
+
+    public function getAddr(): ?Set
+    {
+        return $this->addr;
+    }
+
+    public function setAddr(Set $addr): PatientRole
+    {
+        $addr->checkContainsOrThrow(Addr::class);
+        $this->addr = $addr;
+        return $this;
+    }
+
+    public function getTelecom(): ?Set
+    {
+        return $this->telecom;
+    }
+
+    public function setTelecom(Set $telecom): PatientRole
+    {
+        $telecom->checkContainsOrThrow(Telecom::class);
+        $this->telecom = $telecom;
         return $this;
     }
 
@@ -118,12 +156,17 @@ class PatientRole extends Role
         $el = $this->createElement($doc);
         
         foreach ($this->patientIds->get() as $ii) {
-            $id = $doc->createElement(CDA::NS_CDA.'id');
+            $id = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'id');
             $ii->setValueToElement($id, $doc);
             $el->appendChild($id);
         }
-        
-        $el->appendChild($this->getPatient()->toDOMElement($doc));
+
+        $this->getAddr()?->setValueToElement($el, $doc);
+        $this->getTelecom()?->setValueToElement($el, $doc);
+
+        if ($this->getPatient() !== null) {
+            $el->appendChild($this->getPatient()->toDOMElement($doc));
+        }
         
         return $el;
     }

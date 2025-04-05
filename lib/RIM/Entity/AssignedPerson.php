@@ -33,8 +33,11 @@ use PHPHealth\CDA\DataType\Collection\Set;
  */
 class AssignedPerson extends Person
 {
-    public function __construct(Set $names)
-    {
+    public function __construct(
+        Set $templateIds,
+        Set $names = null
+    ) {
+        $this->setTemplateIds($templateIds);
         $this->setNames($names);
     }
     

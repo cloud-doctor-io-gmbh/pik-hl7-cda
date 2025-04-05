@@ -26,6 +26,8 @@
 
 namespace PHPHealth\CDA\RIM\Participation;
 
+use PHPHealth\CDA\DataType\Collection\Set;
+use PHPHealth\CDA\Elements\TemplateId;
 use PHPHealth\CDA\RIM\Role\PatientRole;
 
 /**
@@ -36,14 +38,34 @@ use PHPHealth\CDA\RIM\Role\PatientRole;
 class RecordTarget extends Participation
 {
     /**
+     * @var Set|null
+     */
+    protected $templateIds;
+
+    /**
      *
      * @var PatientRole
      */
     protected $patientRole;
     
-    public function __construct(PatientRole $patientRole)
-    {
+    public function __construct(
+        PatientRole $patientRole,
+        Set|null $templateIds = null,
+    ) {
         $this->setPatientRole($patientRole);
+        $this->setTemplateIds($templateIds);
+    }
+
+    public function getTemplateIds(): Set|null
+    {
+        return $this->templateIds;
+    }
+
+    public function setTemplateIds(Set $templateIds): RecordTarget
+    {
+        $templateIds->checkContainsOrThrow(TemplateId::class);
+        $this->templateIds = $templateIds;
+        return $this;
     }
     
     public function getPatientRole()
@@ -71,6 +93,8 @@ class RecordTarget extends Participation
     public function toDOMElement(\DOMDocument $doc)
     {
         $el = $this->createElement($doc);
+
+        $this->getTemplateIds()?->setValueToElement($el, $doc);
         
         $el->appendChild($this->patientRole->toDOMElement($doc));
         

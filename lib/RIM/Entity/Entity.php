@@ -28,6 +28,7 @@ use PHPHealth\CDA\DataType\Collection\Set;
 use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\ClinicalDocument as CDA;
 use PHPHealth\CDA\Elements\AbstractElement;
+use PHPHealth\CDA\Elements\TemplateId;
 use PHPHealth\CDA\HasClassCode;
 
 /**
@@ -39,15 +40,21 @@ abstract class Entity extends AbstractElement implements HasClassCode
 {    
     /**
      *
-     * @var Set|InstanceIdentifier[]
+     * @var Set|InstanceIdentifier[]|null
      */
     protected $id;
     
     /**
      *
-     * @var Set|\PHPHealth\CDA\DataType\Name\PersonName[]
+     * @var Set|\PHPHealth\CDA\DataType\Name\PersonName[]|null
      */
     protected $names;
+
+    /**
+     *
+     * @var Set|null
+     */
+    protected $templateIds;
     
     /**
      * return the default class code
@@ -66,7 +73,7 @@ abstract class Entity extends AbstractElement implements HasClassCode
         return $this->getDefaultClassCode();
     }
     
-    public function getId(): Set
+    public function getId(): Set|null
     {
         return $this->id;
     }
@@ -80,6 +87,11 @@ abstract class Entity extends AbstractElement implements HasClassCode
         return $this;
     }
 
+    public function hasIds(): bool
+    {
+        return $this->id !== null;
+    }
+
         
     public function getNames()
     {
@@ -91,6 +103,28 @@ abstract class Entity extends AbstractElement implements HasClassCode
         $this->names = $names;
         
         return $this;
+    }
+
+    public function hasNames(): bool
+    {
+        return $this->names !== null;
+    }
+
+    public function getTemplateIds(): Set|null
+    {
+        return $this->templateIds;
+    }
+
+    public function setTemplateIds(Set $templateIds): Entity
+    {
+        $templateIds->checkContainsOrThrow(TemplateId::class);
+        $this->templateIds = $templateIds;
+        return $this;
+    }
+
+    public function hasTemplateIds(): bool
+    {
+        return $this->templateIds !== null;
     }
     
     /**

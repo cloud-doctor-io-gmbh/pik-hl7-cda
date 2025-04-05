@@ -24,7 +24,10 @@
  */
 namespace PHPHealth\CDA\RIM\Participation;
 
+use PHPHealth\CDA\DataType\Code\CodedWithEquivalents;
 use PHPHealth\CDA\DataType\Quantity\DateAndTime\TimeStamp;
+use PHPHealth\CDA\Elements\FunctionCode;
+use PHPHealth\CDA\Elements\TemplateId;
 use PHPHealth\CDA\RIM\Role\AssignedAuthor;
 use PHPHealth\CDA\Elements\Time;
 
@@ -46,13 +49,29 @@ class Author extends Participation
      * @var AssignedAuthor[]
      */
     private $assignedAuthors = array();
-    
+
+    /**
+     *
+     * @var TemplateId[]
+     */
+    private $templateIds = array();
+
+    /**
+     *
+     * @var FunctionCode
+     */
+    private $functionCode;
+
     public function __construct(
         TimeStamp $time,
-        $assignedAuthors
+        $assignedAuthors,
+        array $templateIds = array(),
+        FunctionCode $functionCode = null
     ) {
         $this->setTime($time);
         $this->setAssignedAuthors($assignedAuthors);
+        $this->setTemplateIds($templateIds);
+        $this->setFunctionCode($functionCode);
     }
     
     public function getTime(): TimeStamp
@@ -80,6 +99,33 @@ class Author extends Participation
         return $this;
     }
 
+    public function getTemplateIds(): array
+    {
+        return $this->templateIds;
+    }
+
+    public function setTemplateIds(array $templateIds): Author
+    {
+        $this->templateIds = $templateIds;
+        return $this;
+    }
+
+    public function getFunctionCode(): FunctionCode
+    {
+        return $this->functionCode;
+    }
+
+    public function hasFunctionCode(): bool
+    {
+        return $this->functionCode !== null;
+    }
+
+    public function setFunctionCode(FunctionCode $functionCode): Author
+    {
+        $this->functionCode = $functionCode;
+        return $this;
+    }
+
     protected function getElementTag(): string
     {
         return 'author';
@@ -93,6 +139,14 @@ class Author extends Participation
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
         $el = $this->createElement($doc);
+
+        foreach ($this->templateIds as $templateId) {
+            $el->appendChild($templateId->toDOMElement($doc));
+        }
+
+        if ($this->hasFunctionCode()) {
+            $el->appendChild($this->functionCode->toDOMElement($doc));
+        }
         
         $el->appendChild((new Time($this->time))->toDOMElement($doc));
         

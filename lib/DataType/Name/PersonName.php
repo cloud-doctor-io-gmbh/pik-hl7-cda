@@ -65,11 +65,11 @@ class PersonName extends EntityName
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
         if (count($this->parts) > 0) {
-            $name = $doc->createElement(CDA::NS_CDA.'name');
+            $name = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'name');
             $el->appendChild($name);
             
             foreach ($this->parts as $part => $value) {
-                $partElement = $doc->createElement(CDA::NS_CDA.$part, $value);
+                $partElement = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.$part, $value);
                 $name->appendChild($partElement);
             }
         } elseif ($this->string !== null) {

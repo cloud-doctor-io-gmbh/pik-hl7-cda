@@ -151,7 +151,7 @@ class InstanceIdentifier extends AnyType
         }
 
         if ($this->hasDisplayable()) {
-            $el->setAttribute(CDA::NS_CDA."displayable", $this->getDisplayable());
+            $el->setAttribute(CDA::NS_CDA."displayable", $this->getDisplayable() ? "true" : "false");
         }
     }
 }

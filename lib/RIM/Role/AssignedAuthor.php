@@ -29,6 +29,7 @@ use PHPHealth\CDA\RIM\Entity\Person;
 use PHPHealth\CDA\DataType\Code\CodedWithEquivalents;
 use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\Elements\Id;
+use PHPHealth\CDA\RIM\Entity\RepresentedOrganization;
 
 /**
  * 
@@ -66,6 +67,11 @@ class AssignedAuthor extends Role
      * @var Person
      */
     protected $author;
+
+    /**
+     * @var RepresentedOrganization
+     */
+    protected $representedOrganization;
     
     /**
      * 
@@ -74,13 +80,15 @@ class AssignedAuthor extends Role
      * @param CodedWithEquivalents $code
      * @param Set $addrs
      * @param Set $telecoms
+     * @param RepresentedOrganization $representedOrganization
      */
     public function __construct(
         Person $author, 
         Set $ids,
         CodedWithEquivalents $code = null,
         Set $addrs = null,
-        Set $telecoms = null
+        Set $telecoms = null,
+        RepresentedOrganization $representedOrganization = null
     ) {
         $this->setAuthor($author);
         $this->setIds($ids);
@@ -95,6 +103,10 @@ class AssignedAuthor extends Role
         
         if (null !== $telecoms) {
             $this->setTelecoms($telecoms);
+        }
+
+        if ($representedOrganization !== null) {
+            $this->setRepresentedOrganization($representedOrganization);
         }
     }
     
@@ -122,6 +134,11 @@ class AssignedAuthor extends Role
     public function getAuthor(): Person
     {
         return $this->author;
+    }
+
+    public function getRepresentedOrganization(): RepresentedOrganization
+    {
+        return $this->representedOrganization;
     }
 
     public function setIds(Set $ids)
@@ -157,6 +174,17 @@ class AssignedAuthor extends Role
         return $this;
     }
 
+    public function setRepresentedOrganization(RepresentedOrganization $representedOrganization): AssignedAuthor
+    {
+        $this->representedOrganization = $representedOrganization;
+        return $this;
+    }
+
+    public function hasRepresentedOrganization(): bool
+    {
+        return $this->representedOrganization !== null;
+    }
+
     protected function getElementTag(): string
     {
         return 'assignedAuthor';
@@ -176,6 +204,10 @@ class AssignedAuthor extends Role
         }
         
         $el->appendChild($this->author->toDOMElement($doc));
+
+        if ($this->hasRepresentedOrganization()) {
+            $el->appendChild($this->representedOrganization->toDOMElement($doc));
+        }
         
         return $el;
     }

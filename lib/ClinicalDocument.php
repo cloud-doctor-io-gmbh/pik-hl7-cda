@@ -37,6 +37,7 @@ use PHPHealth\CDA\Elements\Id;
 use PHPHealth\CDA\Elements\ConfidentialityCode;
 use PHPHealth\CDA\Elements\TypeId;
 use PHPHealth\CDA\Elements\VersionNumber;
+use PHPHealth\CDA\RIM\Participation\LegalAuthenticator;
 use PHPHealth\CDA\RIM\Participation\RecordTarget;
 use PHPHealth\CDA\RIM\Participation\Author;
 use PHPHealth\CDA\RIM\Participation\Custodian;
@@ -154,6 +155,11 @@ class ClinicalDocument
      * @var Author
      */
     private $author;
+
+    /**
+     * @var LegalAuthenticator
+     */
+    private $legalAuthenticator;
     
     public function __construct()
     {
@@ -403,9 +409,21 @@ class ClinicalDocument
         return $this;
     }
 
-        
+    public function getLegalAuthenticator(): LegalAuthenticator
+    {
+        return $this->legalAuthenticator;
+    }
 
-    
+    public function hasLegalAuthenticator(): bool
+    {
+        return $this->legalAuthenticator !== null;
+    }
+
+    public function setLegalAuthenticator(LegalAuthenticator $legalAuthenticator): ClinicalDocument
+    {
+        $this->legalAuthenticator = $legalAuthenticator;
+        return $this;
+    }
         
     /**
      *
@@ -483,6 +501,10 @@ class ClinicalDocument
         
         if ($this->getCustodian()) {
             $doc->appendChild($this->getCustodian()->toDOMElement($dom));
+        }
+
+        if ($this->hasLegalAuthenticator()) {
+            $doc->appendChild($this->getLegalAuthenticator()->toDOMElement($dom));
         }
 
         // add components

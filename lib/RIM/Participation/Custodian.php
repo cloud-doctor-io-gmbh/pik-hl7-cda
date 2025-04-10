@@ -24,6 +24,8 @@
  */
 namespace PHPHealth\CDA\RIM\Participation;
 
+use PHPHealth\CDA\DataType\Collection\Set;
+use PHPHealth\CDA\Elements\TemplateId;
 use PHPHealth\CDA\RIM\Role\AssignedCustodian;
 
 /**
@@ -38,10 +40,16 @@ class Custodian extends Participation
      * @var AssignedCustodian
      */
     protected $assignedCustodian;
+
+    /**
+     * @var Set|null
+     */
+    protected $templateIds;
     
-    public function __construct(AssignedCustodian $assignedCustodian)
+    public function __construct(AssignedCustodian $assignedCustodian, Set|null $templateIds = null)
     {
         $this->setAssignedCustodian($assignedCustodian);
+        $this->setTemplateIds($templateIds);
     }
     
     /**
@@ -65,6 +73,17 @@ class Custodian extends Participation
         return $this;
     }
 
+    public function getTemplateIds(): Set|null
+    {
+        return $this->templateIds;
+    }
+
+    public function setTemplateIds(Set|null $templateIds): Custodian
+    {
+        $templateIds?->checkContainsOrThrow(TemplateId::class);
+        $this->templateIds = $templateIds;
+        return $this;
+    }
         
     protected function getElementTag(): string
     {
@@ -79,7 +98,8 @@ class Custodian extends Participation
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
         $el = $this->createElement($doc);
-        
+
+        $this->getTemplateIds()?->setValueToElement($el, $doc);
         $el->appendChild($this->getAssignedCustodian()->toDOMElement($doc));
         
         return $el;

@@ -22,78 +22,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace PHPHealth\CDA\RIM\Role;
+namespace PHPHealth\CDA\Elements;
 
-use PHPHealth\CDA\DataType\Collection\Set;
-use PHPHealth\CDA\Elements\TemplateId;
-use PHPHealth\CDA\RIM\Entity\DrugOrMaterial;
+use PHPHealth\CDA\DataType\Quantity\IntegerNumber;
+use PHPHealth\CDA\DataType\Collection\Interval\AbstractInterval;
+use PHPHealth\CDA\DataType\Quantity\PhysicalQuantity\PhysicalQuantity;
 
 /**
  * 
  *
  * @author Julien Fastré <julien.fastre@champs-libres.coop>
  */
-class ManufacturedProduct extends Role
+class RepeatNumber extends AbstractElement
 {
     /**
      *
-     * @var DrugOrMaterial
+     * @var IntegerNumber
      */
-    protected $manufacturedDrugOrOther;
-
+    protected $value;
+    
+    public function __construct($value)
+    {
+        $this->setValue($value);
+    }
+    
     /**
-     * @var Set
+     * 
+     * @return IntegerNumber
      */
-    protected $templateIds;
-    
-    function __construct(DrugOrMaterial $manufacturedDrugOrOther)
+    function getValue()
     {
-        $this->templateIds = new Set(TemplateId::class);
-        $this->setManufacturedDrugOrOther($manufacturedDrugOrOther);
-    }
-    
-    public function getManufacturedDrugOrOther()
-    {
-        return $this->manufacturedDrugOrOther;
+        return $this->value;
     }
 
-    public function setManufacturedDrugOrOther(DrugOrMaterial $manufacturedDrugOrOther)
+    function setValue(IntegerNumber $value)
     {
-        $this->manufacturedDrugOrOther = $manufacturedDrugOrOther;
+        $this->value = $value;
+        
         return $this;
     }
 
-    public function getTemplateIds(): Set
-    {
-        return $this->templateIds;
-    }
-
-    public function setTemplateIds(Set $templateIds): ManufacturedProduct
-    {
-        $this->templateIds = $templateIds;
-        return $this;
-    }
-
+        
     protected function getElementTag(): string
     {
-        return 'manufacturedProduct';
-    }
-
-    public function getClassCode(): string
-    {
-        return 'MANU';
+        return 'repeatNumber';
     }
 
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
-        $el = $this->createElement($doc);
-
-        $this->templateIds->setValueToElement($el, $doc);
-        
-        if ($this->getManufacturedDrugOrOther() !== null) {
-            $el->appendChild($this->getManufacturedDrugOrOther()
-                ->toDOMElement($doc));
-        }
+        $el = $this->createElement($doc, ['value']);
         
         return $el;
     }

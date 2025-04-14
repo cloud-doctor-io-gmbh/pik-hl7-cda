@@ -27,6 +27,8 @@
 namespace PHPHealth\CDA\Component;
 
 use PHPHealth\CDA\ClinicalDocument as CD;
+use PHPHealth\CDA\DataType\Collection\Set;
+use PHPHealth\CDA\Elements\TemplateId;
 
 /**
  * Component which contains the body of the document
@@ -40,7 +42,17 @@ class RootBodyComponent extends AbstractComponent
      * @var AbstractComponent[]
      */
     private $components = array();
-    
+
+    /**
+     * @var Set
+     */
+    private $templateIds;
+
+    public function __construct()
+    {
+        $this->templateIds = new Set(TemplateId::class);
+    }
+
     public function addComponent(AbstractComponent $component)
     {
         $this->components[] = $component;
@@ -54,6 +66,17 @@ class RootBodyComponent extends AbstractComponent
     {
         return $this->components;
     }
+
+    public function getTemplateIds(): Set
+    {
+        return $this->templateIds;
+    }
+
+    public function setTemplateIds(Set $templateIds): RootBodyComponent
+    {
+        $this->templateIds = $templateIds;
+        return $this;
+    }
     
     public function isEmpty()
     {
@@ -62,7 +85,9 @@ class RootBodyComponent extends AbstractComponent
 
     public function toDOMElement(\DOMDocument $doc)
     {
-        $component = $doc->createElement('component');
+        $component = $doc->createElementNS(CD::NS_CDA_URI, CD::NS_CDA.'component');
+
+        $this->templateIds->setValueToElement($component, $doc);
         
         foreach ($this->getComponents() as $subComponent) {
             $component->appendChild($subComponent->toDOMElement($doc));

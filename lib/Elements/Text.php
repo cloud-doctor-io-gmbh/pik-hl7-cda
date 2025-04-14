@@ -27,6 +27,7 @@
 namespace PHPHealth\CDA\Elements;
 
 use PHPHealth\CDA\DataType\TextAndMultimedia\CharacterString;
+use PHPHealth\CDA\DataType\TextAndMultimedia\EncapsuledData;
 use PHPHealth\CDA\Elements\AbstractElement;
 
 /**
@@ -38,25 +39,25 @@ class Text extends AbstractElement
 {
     /**
      *
-     * @var CharacterString
+     * @var EncapsuledData
      */
     private $content;
     
-    public function __construct(CharacterString $content)
+    public function __construct(EncapsuledData $content)
     {
         $this->setContent($content);
     }
 
     /**
      * 
-     * @return CharacterString
+     * @return EncapsuledData
      */
     public function getContent()
     {
         return $this->content;
     }
 
-    public function setContent(CharacterString $content)
+    public function setContent(EncapsuledData $content)
     {
         $this->content = $content;
         

@@ -26,10 +26,12 @@
 
 namespace PHPHealth\CDA\Elements;
 
+use PHPHealth\CDA\DataType\Collection\Interval\PhysicalQuantityInterval;
 use PHPHealth\CDA\DataType\Quantity\DateAndTime\TimeStamp;
 use PHPHealth\CDA\DataType\Collection\Interval\PeriodicIntervalOfTime;
 use PHPHealth\CDA\DataType\Collection\Interval\IntervalOfTime;
 use PHPHealth\CDA\ClinicalDocument as CDA;
+use PHPHealth\CDA\DataType\Quantity\PhysicalQuantity\PhysicalQuantity;
 
 /**
  *
@@ -40,7 +42,7 @@ class EffectiveTime extends AbstractElement
 {
     /**
      *
-     * @var TimeStamp|PeriodicIntervalOfTime
+     * @var TimeStamp|PeriodicIntervalOfTime|PhysicalQuantityInterval|PhysicalQuantity
      */
     protected $value;
     
@@ -68,20 +70,25 @@ class EffectiveTime extends AbstractElement
             $value instanceof TimeStamp
             ||
             $value instanceof IntervalOfTime
+            ||
+            $value instanceof PhysicalQuantityInterval
+            ||
+            $value instanceof PhysicalQuantity
             ) {
             $this->value = $value;
         } else {
             throw new \UnexpectedValueException(sprintf("The timestamp must "
-                . "implements %s, %s or %s", PeriodicIntervalOfTime::class, 
-                TimeStamp::class, IntervalOfTime::class));
+                . "implements %s, %s, %s, %s, or %s", PeriodicIntervalOfTime::class,
+                TimeStamp::class, IntervalOfTime::class, PhysicalQuantityInterval::class, PhysicalQuantity::class));
         }
         
         return $this;
     }
     
-    public function setOperatorAppend()
+    public function setOperatorAppend(): EffectiveTime
     {
         $this->operator = 'A';
+        return $this;
     }
 
     public function toDOMElement(\DOMDocument $doc)

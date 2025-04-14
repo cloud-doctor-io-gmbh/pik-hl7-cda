@@ -24,13 +24,13 @@
  */
 namespace PHPHealth\CDA\Component\SingleComponent;
 
+use PHPHealth\CDA\DataType\Code\CodedValue;
 use PHPHealth\CDA\Elements\AbstractElement;
 use PHPHealth\CDA\HasClassCode;
 use PHPHealth\CDA\Elements\TemplateId;
 use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\Elements\Id;
 use PHPHealth\CDA\Elements\Title;
-use PHPHealth\CDA\DataType\Code\CodedWithEquivalents;
 use PHPHealth\CDA\Elements\Code;
 use PHPHealth\CDA\DataType\TextAndMultimedia\CharacterString;
 use PHPHealth\CDA\Elements\Text;
@@ -52,13 +52,13 @@ class Section extends AbstractElement implements HasClassCode
     
     /**
      *
-     * @var CodedWithEquivalents
+     * @var CodedValue
      */
     private $code;
     
     /**
      * 
-     * @var CharacterString
+     * @var ?CharacterString
      */
     private $text;
     
@@ -106,18 +106,18 @@ class Section extends AbstractElement implements HasClassCode
         return $this;
     }
 
-    public function getCode(): CodedWithEquivalents
+    public function getCode(): CodedValue
     {
         return $this->code;
     }
 
-    public function setCode(CodedWithEquivalents $code)
+    public function setCode(CodedValue $code)
     {
         $this->code = $code;
         return $this;
     }
     
-    public function getText(): CharacterString
+    public function getText(): ?CharacterString
     {
         return $this->text;
     }
@@ -203,9 +203,10 @@ class Section extends AbstractElement implements HasClassCode
         return $this->entries;
     }
     
-    public function addEntry(Entry $entry)
+    public function addEntry(Entry $entry): Section
     {
         $this->entries[] = $entry;
+        return $this;
     }
 
     

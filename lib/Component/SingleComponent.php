@@ -87,7 +87,7 @@ class SingleComponent extends AbstractComponent implements HasTypeCode
     
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
-        $component = $doc->createElement(CDA::NS_CDA.'component');
+        $component = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'component');
         $component->setAttribute(CDA::NS_CDA.'typeCode', $this->getTypeCode());
         
         foreach ($this->getSections() as $section) {

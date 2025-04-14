@@ -76,7 +76,7 @@ abstract class AbstractElement implements \PHPHealth\CDA\ElementInterface
         
         if (count($properties) > 0) {
             foreach ($properties as $property) {
-                $this->{$property}->setValueToElement($el, $doc);
+                $this->{$property}?->setValueToElement($el, $doc);
             }
         }
         

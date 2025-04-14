@@ -429,18 +429,23 @@ class ClinicalDocument
      *
      * @return \DOMDocument
      */
-    public function toDOMDocument(\DOMDocument $dom = null)
+    public function toDOMDocument(\DOMDocument $dom = null, \Closure $root_element_callback = null)
     {
         $dom = $dom === null ? new \DOMDocument('1.0', 'UTF-8') : $dom;
         
         $doc = $dom->createElementNS(self::NS_CDA_URI, 'ClinicalDocument');
         $dom->appendChild($doc);
-        // set the NS
-        $doc->setAttributeNS(
-            self::NS_XSI_URI,
-            'xsi:schemaLocation',
-            'urn:hl7-org:v3 CDA.xsd'
-        );
+
+        if ($root_element_callback !== null) {
+            $dom = $root_element_callback($dom);
+        }
+
+//        // set the NS
+//        $doc->setAttributeNS(
+//            self::NS_XSI_URI,
+//            'xsi:schemaLocation',
+//            'urn:hl7-org:v3 CDA.xsd'
+//        );
         // add typeId
         $doc->appendChild($this->typeId->toDOMElement($dom));
         

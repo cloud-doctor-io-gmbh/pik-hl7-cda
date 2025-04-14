@@ -22,78 +22,67 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace PHPHealth\CDA\RIM\Role;
+namespace PHPHealth\CDA\Elements;
 
-use PHPHealth\CDA\DataType\Collection\Set;
-use PHPHealth\CDA\Elements\TemplateId;
-use PHPHealth\CDA\RIM\Entity\DrugOrMaterial;
+use PHPHealth\CDA\Elements\AbstractElement;
+use PHPHealth\CDA\DataType\Collection\Interval\AbstractInterval;
+use PHPHealth\CDA\DataType\Quantity\PhysicalQuantity\PhysicalQuantity;
 
 /**
  * 
  *
  * @author Julien Fastré <julien.fastre@champs-libres.coop>
  */
-class ManufacturedProduct extends Role
+class Quantity extends AbstractElement
 {
     /**
      *
-     * @var DrugOrMaterial
+     * @var AbstractInterval|PhysicalQuantity
      */
-    protected $manufacturedDrugOrOther;
-
+    protected $quantity;
+    
+    public function __construct($quantity)
+    {
+        $this->setQuantity($quantity);
+    }
+    
     /**
-     * @var Set
+     * 
+     * @return AbstractInterval|PhysicalQuantity
      */
-    protected $templateIds;
-    
-    function __construct(DrugOrMaterial $manufacturedDrugOrOther)
+    function getQuantity()
     {
-        $this->templateIds = new Set(TemplateId::class);
-        $this->setManufacturedDrugOrOther($manufacturedDrugOrOther);
-    }
-    
-    public function getManufacturedDrugOrOther()
-    {
-        return $this->manufacturedDrugOrOther;
+        return $this->quantity;
     }
 
-    public function setManufacturedDrugOrOther(DrugOrMaterial $manufacturedDrugOrOther)
+    function setQuantity($quantity)
     {
-        $this->manufacturedDrugOrOther = $manufacturedDrugOrOther;
+        if (!
+            ( 
+            $quantity instanceof PhysicalQuantity 
+            || 
+            $quantity instanceof AbstractInterval
+            )
+            ) {
+            throw new \UnexpectedValueException(sprintf("The value of quantity"
+                . " should be an instance of %s or %s", PhysicalQuantity::class,
+                AbstractInterval::class));
+        }
+        
+        $this->quantity = $quantity;
+        
         return $this;
     }
 
-    public function getTemplateIds(): Set
-    {
-        return $this->templateIds;
-    }
-
-    public function setTemplateIds(Set $templateIds): ManufacturedProduct
-    {
-        $this->templateIds = $templateIds;
-        return $this;
-    }
-
+        
     protected function getElementTag(): string
     {
-        return 'manufacturedProduct';
-    }
-
-    public function getClassCode(): string
-    {
-        return 'MANU';
+        return 'quantity';
     }
 
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
-        $el = $this->createElement($doc);
-
-        $this->templateIds->setValueToElement($el, $doc);
-        
-        if ($this->getManufacturedDrugOrOther() !== null) {
-            $el->appendChild($this->getManufacturedDrugOrOther()
-                ->toDOMElement($doc));
-        }
+        $el = $this->createElement($doc, ['quantity']);
         
         return $el;
     }

@@ -27,7 +27,10 @@ namespace PHPHealth\CDA\RIM\Act;
 use PHPHealth\CDA\DataType\Code\CodedWithEquivalents;
 use PHPHealth\CDA\DataType\Collection\Set;
 use PHPHealth\CDA\DataType\Collection\Interval;
+use PHPHealth\CDA\DataType\Quantity\IntegerNumber;
 use PHPHealth\CDA\DataType\Quantity\PhysicalQuantity\PhysicalQuantity;
+use PHPHealth\CDA\Elements\EntryRelationship;
+use PHPHealth\CDA\Elements\RepeatNumber;
 use PHPHealth\CDA\Elements\TemplateId;
 use PHPHealth\CDA\Elements\Text;
 use PHPHealth\CDA\Elements\EffectiveTime;
@@ -46,7 +49,7 @@ class SubstanceAdministration extends Act
 {
     /**
      *
-     * @var CodedWithEquivalents
+     * @var ?CodedWithEquivalents
      */
     private $routeCode;
     
@@ -67,14 +70,24 @@ class SubstanceAdministration extends Act
      * @var Interval|PhysicalQuantity
      */
     private $rateQuantity;
+
+    /**
+     *
+     * @var IntegerNumber
+     */
+    private $repeatNumber;
     
     /**
      *
      * @var Consumable 
      */
     private $consumable;
-    
-    
+
+    public function __construct()
+    {
+        $this->entryRelationships = new Set(EntryRelationship::class);
+    }
+
     public function getClassCode(): string
     {
         return 'SBADM';
@@ -86,10 +99,9 @@ class SubstanceAdministration extends Act
     }
     
     /**
-     * 
-     * @return CodedWithEquivalents
+     * @return ?CodedWithEquivalents
      */
-    public function getRouteCode(): CodedWithEquivalents
+    public function getRouteCode(): ?CodedWithEquivalents
     {
         return $this->routeCode;
     }
@@ -119,6 +131,14 @@ class SubstanceAdministration extends Act
     public function getRateQuantity()
     {
         return $this->rateQuantity;
+    }
+
+    /**
+     * @return IntegerNumber
+     */
+    public function getRepeatNumber(): IntegerNumber
+    {
+        return $this->repeatNumber;
     }
     
     /**
@@ -174,7 +194,11 @@ class SubstanceAdministration extends Act
         return $this;
     }
     
-    
+    public function setRepeatNumber(IntegerNumber $repeatNumber): SubstanceAdministration
+    {
+        $this->repeatNumber = $repeatNumber;
+        return $this;
+    }
 
     /**
      * 
@@ -210,28 +234,20 @@ class SubstanceAdministration extends Act
         }
         
         if ($this->getStatusCode() !== null) {
-            $el->appendChild(
-                (new \PHPHealth\CDA\Elements\StatusCode($this->getStatusCode()))
-                    ->toDOMElement($doc)
-                );
+            $el->appendChild($this->getStatusCode()->toDOMElement($doc));
         }
-        
-        $first = true;
-        foreach ($this->getEffectiveTime() as $time) {
-            $effectiveTime = new EffectiveTime($time);
-            
-            if (! $first) {
-                $effectiveTime->setOperatorAppend();
-            }
-            
-            $el->appendChild($effectiveTime
-                ->toDOMElement($doc));
-            
-            $first = false;
+
+        foreach ($this->getEffectiveTime() as $effectiveTime) {
+            $el->appendChild($effectiveTime->toDOMElement($doc));
         }
         
         if ($this->getRouteCode() !== null) {
             $el->appendChild((new RouteCode($this->getRouteCode()))
+                ->toDOMElement($doc));
+        }
+
+        if ($this->getRepeatNumber() !== null) {
+            $el->appendChild((new RepeatNumber($this->getRepeatNumber()))
                 ->toDOMElement($doc));
         }
         
@@ -243,6 +259,8 @@ class SubstanceAdministration extends Act
         if ($this->getConsumable() !== null) {
             $el->appendChild($this->getConsumable()->toDOMElement($doc));
         }
+
+        $this->entryRelationships->setValueToElement($el, $doc);
         
         return $el;
     }

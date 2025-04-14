@@ -76,6 +76,6 @@ class Boolean extends AnyType
         assert ($this->getTag() === null, new \RuntimeException("The tag "
             . "on boolean must be defined"));
         
-        $el->setAttributeNS(CD::NS_CDA, $this->getTag(), $value);
+        $el->setAttribute($this->getTag(), $this->value);
     }
 }

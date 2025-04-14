@@ -39,30 +39,30 @@ class InstanceIdentifier extends AnyType
 {
     /**
      *
-     * @var string
+     * @var string|null
      */
     private $root;
     
     /**
      *
-     * @var string
+     * @var string|null
      */
     private $extension;
     
     /**
      *
-     * @var string
+     * @var string|null
      */
     private $assigningAuthorityName;
 
     /**
      *
-     * @var bool
+     * @var bool|null
      */
     private $displayable;
     
     public function __construct(
-        $root,
+        $root = null,
         $extension = null,
         $assigningAuthorityName = null,
         $displayable = null
@@ -137,8 +137,13 @@ class InstanceIdentifier extends AnyType
 
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
+        if ($this->root === null) {
+            $el->setAttribute("nullFlavor", 'NA');
+            return;
+        }
+
         $el->setAttribute(CDA::NS_CDA."root", $this->getRoot());
-        
+
         if ($this->hasExtension()) {
             $el->setAttribute(CDA::NS_CDA."extension", $this->getExtension());
         }

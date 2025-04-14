@@ -22,61 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace PHPHealth\CDA\Component;
-
-use PHPHealth\CDA\HasClassCode;
-
-use PHPHealth\CDA\ClinicalDocument as CDA;
+namespace PHPHealth\CDA\Pharm;
 
 /**
- * 
  *
  * @author Julien Fastré <julien.fastre@champs-libres.coop>
  */
-class XMLBodyComponent extends AbstractComponent implements HasClassCode
+interface HasDeterminerCode
 {
     /**
-     *
-     * @var AbstractComponent[]
+     * 
+     * @return string
      */
-    private $components = array();
-    
-    public function getComponents(): array
-    {
-        return $this->components;
-    }
-
-    public function setComponents(array $components)
-    {
-        $this->components = $components;
-        
-        return $this;
-    }
-    
-    public function addComponent(SingleComponent $component)
-    {
-        $this->components[] = $component;
-        
-        return $this;
-    }
-    
-    public function getClassCode(): string
-    {
-        return 'DOCBODY';
-    }
-
-            
-    public function toDOMElement(\DOMDocument $doc): \DOMElement
-    {
-        $structuredBody = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'structuredBody');
-        $structuredBody->setAttribute(CDA::NS_CDA.'classCode',
-            $this->getClassCode());
-        
-        
-        foreach ($this->getComponents() as $component) {
-            $structuredBody->appendChild($component->toDOMElement($doc));
-        }
-        
-        return $structuredBody;
-    }
+    public function getDeterminerCode();
 }

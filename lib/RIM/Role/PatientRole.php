@@ -71,6 +71,8 @@ class PatientRole extends Role
     ) {
         $this->setPatientIds($ids);
         $this->setPatient($patient);
+        $this->addr = $addr;
+        $this->telecom = $telecom;
     }
     
     /**

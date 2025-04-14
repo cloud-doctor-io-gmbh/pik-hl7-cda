@@ -22,61 +22,80 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace PHPHealth\CDA\DataType\Quantity\PhysicalQuantity;
+namespace PHPHealth\CDA\DataType\Collection\Interval;
 
-use PHPHealth\CDA\DataType\Quantity\AbstractQuantity;
 use PHPHealth\CDA\ClinicalDocument as CDA;
+use PHPHealth\CDA\DataType\Quantity\DateAndTime\TimeStamp;
+use PHPHealth\CDA\DataType\Quantity\PhysicalQuantity\PhysicalQuantity;
+
 
 /**
- * A dimensioned quantity expressing the result of measuring. 
  * 
  *
  * @author Julien Fastré <julien.fastre@champs-libres.coop>
  */
-class PhysicalQuantity extends AbstractQuantity
+class PhysicalQuantityInterval extends AbstractInterval
 {
-    protected $ucumUnit;
+    /**
+     *
+     * @var PhysicalQuantity|null
+     */
+    private $low;
     
-    protected $value;
+    /**
+     *
+     * @var PhysicalQuantity|null
+     */
+    private $high;
     
-    public function __construct($ucumUnit, $value)
+    function __construct(PhysicalQuantity|null $low = null, PhysicalQuantity|null $high = null)
     {
-        $this->setUcumUnit($ucumUnit);
-        $this->setValue($value);
+        $this->setHigh($high);
+        $this->setLow($low);
     }
 
     
-    public function getUcumUnit()
+    function getLow(): PhysicalQuantity
     {
-        return $this->ucumUnit;
+        return $this->low;
     }
 
-    public function getValue()
+    function getHigh(): PhysicalQuantity
     {
-        return $this->value;
+        return $this->high;
     }
 
-    public function setUcumUnit($ucumUnit)
+    function setLow(PhysicalQuantity|null $low)
     {
-        $this->ucumUnit = $ucumUnit;
+        $this->low = $low;
         return $this;
     }
 
-    public function setValue($value)
+    function setHigh(PhysicalQuantity|null $high)
     {
-        $this->value = $value;
+        $this->high = $high;
         return $this;
     }
 
         
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
-        if ($this->getValue() !== NULL) {
-            $el->setAttribute('value', $this->getValue());
+        $low = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'low');
+        if ($this->low !== null) {
+            $this->low->setValueToElement($low, $doc);
+        } else {
+            $low->setAttribute('nullFlavor', 'NA');
         }
         
-        if ($this->getUcumUnit() !== NULL) {
-            $el->setAttribute('unit', $this->getUcumUnit());
+        $high = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'high');
+        if ($this->high !== null) {
+            $this->high->setValueToElement($high, $doc);
+        } else {
+            $high->setAttribute('nullFlavor', 'NA');
         }
+        
+        $el->appendChild($low);
+        $el->appendChild($high);
+        $el->setAttributeNS(CDA::NS_XSI_URI, 'xsi:type', 'IVL_PQ');
     }
 }

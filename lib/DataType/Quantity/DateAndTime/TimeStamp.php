@@ -136,6 +136,6 @@ class TimeStamp extends AbstractQuantity
             $value .= $this->getDate()->format("O");
         }
         
-        $el->setAttributeNS(CD::NS_CDA, 'value', $value);
+        $el->setAttribute('value', $value);
     }
 }

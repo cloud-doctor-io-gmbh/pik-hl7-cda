@@ -37,17 +37,17 @@ class IntervalOfTime extends AbstractInterval
 {
     /**
      *
-     * @var TimeStamp
+     * @var TimeStamp|null
      */
     private $low;
     
     /**
      *
-     * @var TimeStamp
+     * @var TimeStamp|null
      */
     private $high;
     
-    function __construct(TimeStamp $low, TimeStamp $high)
+    function __construct(TimeStamp|null $low = null, TimeStamp|null $high = null)
     {
         $this->setHigh($high);
         $this->setLow($low);
@@ -64,13 +64,13 @@ class IntervalOfTime extends AbstractInterval
         return $this->high;
     }
 
-    function setLow(TimeStamp $low)
+    function setLow(TimeStamp|null $low)
     {
         $this->low = $low;
         return $this;
     }
 
-    function setHigh(TimeStamp $high)
+    function setHigh(TimeStamp|null $high)
     {
         $this->high = $high;
         return $this;
@@ -79,11 +79,19 @@ class IntervalOfTime extends AbstractInterval
         
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
-        $low = $doc->createElement(CDA::NS_CDA.'low');
-        $this->low->setValueToElement($low, $doc);
+        $low = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'low');
+        if ($this->low !== null) {
+            $this->low->setValueToElement($low, $doc);
+        } else {
+            $low->setAttribute('nullFlavor', 'NA');
+        }
         
-        $high = $doc->createElement(CDA::NS_CDA.'high');
-        $this->high->setValueToElement($high, $doc);
+        $high = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'high');
+        if ($this->high !== null) {
+            $this->high->setValueToElement($high, $doc);
+        } else {
+            $high->setAttribute('nullFlavor', 'NA');
+        }
         
         $el->appendChild($low);
         $el->appendChild($high);

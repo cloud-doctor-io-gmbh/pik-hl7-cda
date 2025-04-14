@@ -30,6 +30,6 @@ class IntegerNumber extends AbstractQuantity
 
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
-        $el->setAttributeNS(CD::NS_CDA, 'value', $this->getValue());
+        $el->setAttribute('value', $this->getValue());
     }
 }

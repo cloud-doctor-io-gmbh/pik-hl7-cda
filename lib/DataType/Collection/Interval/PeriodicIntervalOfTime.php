@@ -25,6 +25,7 @@
 namespace PHPHealth\CDA\DataType\Collection\Interval;
 
 use PHPHealth\CDA\ClinicalDocument as CDA;
+use PHPHealth\CDA\DataType\Quantity\PhysicalQuantity\PhysicalQuantity;
 
 /**
  * 
@@ -34,8 +35,7 @@ use PHPHealth\CDA\ClinicalDocument as CDA;
 class PeriodicIntervalOfTime extends AbstractInterval
 {
     /**
-     *
-     * @var \DateInterval
+     * @var PhysicalQuantity|PhysicalQuantityInterval
      */
     protected $period;
     
@@ -45,12 +45,12 @@ class PeriodicIntervalOfTime extends AbstractInterval
      */
     protected $institutionSpecified = null;
     
-    public function __construct(\DateInterval $period)
+    public function __construct(PhysicalQuantity|PhysicalQuantityInterval $period)
     {
         $this->setPeriod($period);
     }
     
-    public function getPeriod(): \DateInterval
+    public function getPeriod(): PhysicalQuantity|PhysicalQuantityInterval
     {
         return $this->period;
     }
@@ -60,7 +60,7 @@ class PeriodicIntervalOfTime extends AbstractInterval
         return $this->institutionSpecified;
     }
 
-    public function setPeriod(\DateInterval $period)
+    public function setPeriod(PhysicalQuantity|PhysicalQuantityInterval $period)
     {
         $this->period = $period;
         
@@ -72,35 +72,6 @@ class PeriodicIntervalOfTime extends AbstractInterval
         $this->institutionSpecified = $institutionSpecified;
         
         return $this;
-    }
-
-    /**
-     * return an array where the first element is the unit, and the 
-     * second the unit
-     */
-    protected function processPeriod()
-    {
-        $seconds = $this->getPeriod()->format('%s');
-        $minutes = $this->getPeriod()->format('%i');
-        $hours   = $this->getPeriod()->format('%h');
-        $days    = $this->getPeriod()->format('%d');
-        $months  = $this->getPeriod()->format('%m');
-        
-        if ($months != 0) {
-            return ['mo', $months];
-        }
-        if ($days   != 0) {
-            return ['d', $days];
-        }
-        if ($hours != 0) {
-            return ['h', $hours];
-        }
-        if ($minutes != 0) {
-            return ['min', $minutes];
-        }
-        if ($seconds != 0) {
-            return ['s', $seconds];
-        }
     }
         
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
@@ -115,11 +86,9 @@ class PeriodicIntervalOfTime extends AbstractInterval
             $el->setAttribute(CDA::NS_CDA.'institutionSpecified',
                 $this->getInstitutionSpecified() ? 'true' : 'false');
         }
-        
-        list($unit, $value) = $this->processPeriod();
-        $period = $doc->createElement(CDA::NS_CDA.'period');
-        $period->setAttribute(CDA::NS_CDA.'unit', $unit);
-        $period->setAttribute(CDA::NS_CDA.'value', $value);
+
+        $period = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'period');
+        $this->getPeriod()->setValueToElement($period, $doc);
         
         $el->appendChild($period);
     }

@@ -55,14 +55,12 @@ class NarrativeString extends CharacterString
     }
     
     /**
-     * 
-     * @param string $content
+     * @param Paragraph $content
      * @return $this
      */
-    public function addParagraph($content)
+    public function addParagraph($paragraph)
     {
-        $this->addElement('paragraph', $content);
-        
+        $this->addElement('paragraph', $paragraph);
         return $this;
     }
     
@@ -84,12 +82,9 @@ class NarrativeString extends CharacterString
         foreach ($this->elements as list($type, $element)) {
             switch ($type)
             {
-                case 'table': 
-                    $el->appendChild($element->toDOMElement($doc));
-                    break;
                 case 'paragraph':
-                    $el->appendChild((new Paragraph($element))
-                            ->toDOMElement($doc));
+                case 'table':
+                    $el->appendChild($element->toDOMElement($doc));
                     break;
                 default:
                     // this should not happen

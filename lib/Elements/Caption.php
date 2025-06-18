@@ -31,9 +31,9 @@ use PHPHealth\CDA\Elements\AbstractElement;
  *
  * @author Julien Fastré <julien.fastre@champs-libres.coop>
  */
-class Paragraph extends AbstractElement
+class Caption extends AbstractElement
 {
-    protected $content = [];
+    protected $content = '';
     
     public function __construct($content)
     {
@@ -51,34 +51,17 @@ class Paragraph extends AbstractElement
         return $this;
     }
 
-    function addContent($content)
-    {
-        $this->content[] = $content;
-        return $this;
-    }
     
     protected function getElementTag(): string
     {
-        return 'paragraph';
+        return 'caption';
     }
 
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
         $el = $this->createElement($doc);
-
-        if (is_string($this->content)) {
-            $el->appendChild($doc->createTextNode($this->getContent()));
-        }
-
-        if (is_array($this->content)) {
-            foreach ($this->content as $content) {
-                if (is_string($content)) {
-                    $el->appendChild($doc->createTextNode($content));
-                } else {
-                    $el->appendChild($content->toDOMElement($doc));
-                }
-            }
-        }
+        
+        $el->appendChild($doc->createTextNode($this->getContent()));
         
         return $el;
     }

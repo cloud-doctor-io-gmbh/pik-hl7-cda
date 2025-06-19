@@ -30,6 +30,7 @@ use PHPHealth\CDA\DataType\Quantity\DateAndTime\TimeStamp;
 use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\DataType\Code\CodedValue;
 use PHPHealth\CDA\Elements\Code;
+use PHPHealth\CDA\Elements\RelatedDocument;
 use PHPHealth\CDA\Elements\SetId;
 use PHPHealth\CDA\Elements\Title;
 use PHPHealth\CDA\Elements\EffectiveTime;
@@ -160,6 +161,11 @@ class ClinicalDocument
      * @var LegalAuthenticator
      */
     private $legalAuthenticator;
+
+    /**
+     * @var RelatedDocument
+     */
+    private $relatedDocument;
     
     public function __construct()
     {
@@ -424,6 +430,33 @@ class ClinicalDocument
         $this->legalAuthenticator = $legalAuthenticator;
         return $this;
     }
+
+    public function getTypeId(): TypeId
+    {
+        return $this->typeId;
+    }
+
+    public function setTypeId(TypeId $typeId): ClinicalDocument
+    {
+        $this->typeId = $typeId;
+        return $this;
+    }
+
+    public function getRelatedDocument(): RelatedDocument
+    {
+        return $this->relatedDocument;
+    }
+
+    public function hasRelatedDocument(): bool
+    {
+        return $this->relatedDocument !== null;
+    }
+
+    public function setRelatedDocument(RelatedDocument $relatedDocument): ClinicalDocument
+    {
+        $this->relatedDocument = $relatedDocument;
+        return $this;
+    }
         
     /**
      *
@@ -510,6 +543,10 @@ class ClinicalDocument
 
         if ($this->hasLegalAuthenticator()) {
             $doc->appendChild($this->getLegalAuthenticator()->toDOMElement($dom));
+        }
+
+        if ($this->hasRelatedDocument()) {
+            $doc->appendChild($this->getRelatedDocument()->toDOMElement($dom));
         }
 
         // add components

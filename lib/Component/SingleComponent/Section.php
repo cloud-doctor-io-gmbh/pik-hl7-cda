@@ -106,7 +106,7 @@ class Section extends AbstractElement implements HasClassCode
         return $this;
     }
 
-    public function getCode(): CodedValue
+    public function getCode(): ?CodedValue
     {
         return $this->code;
     }

@@ -75,6 +75,12 @@ class ParentDocument extends AbstractElement
 
     public function toDOMElement(\DOMDocument $doc)
     {
-        return $this->createElement($doc, ['id', 'setId', 'versionNumber']);
+        $el =  $this->createElement($doc);
+
+        $el->appendChild((new Id($this->id))->toDOMElement($doc));
+        $el->appendChild((new SetId($this->setId))->toDOMElement($doc));
+        $el->appendChild((new VersionNumber($this->versionNumber))->toDOMElement($doc));
+
+        return $el;
     }
 }

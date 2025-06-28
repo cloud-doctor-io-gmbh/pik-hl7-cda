@@ -274,6 +274,14 @@ class Act extends AbstractElement implements HasClassCode, HasMoodCodeInterface
             }
         }
 
+        if ($this->getIds() !== null) {
+            foreach ($this->getIds()->getIterator() as $id) {
+                /* @var $id InstanceIdentifier */
+                $el->appendChild((new \PHPHealth\CDA\Elements\Id($id))
+                    ->toDOMElement($doc));
+            }
+        }
+
         if ($this->getCode() !== null) {
             $el->appendChild((new Code($this->getCode()))->toDOMElement($doc));
         }

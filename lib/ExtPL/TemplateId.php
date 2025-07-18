@@ -22,77 +22,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace PHPHealth\CDA\Elements;
+namespace PHPHealth\CDA\ExtPL;
 
 use PHPHealth\CDA\Elements\AbstractElement;
-use PHPHealth\CDA\RIM\Act\Act;
-use PHPHealth\CDA\HasTypeCode;
+use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
+use PHPHealth\CDA\ClinicalDocument as CDA;
 
 /**
  * 
  *
  * @author Julien Fastré <julien.fastre@champs-libres.coop>
  */
-class Entry extends AbstractElement implements HasTypeCode
+class TemplateId extends AbstractExtPLElement
 {
     /**
      *
-     * @var Act[]
+     * @var InstanceIdentifier
      */
-    protected $acts = array();
+    protected $root;
     
-    function getActs()
+    public function __construct(InstanceIdentifier $code)
     {
-        return $this->acts;
+        $this->root = $code;
     }
 
-    function setActs(array $acts)
+        public function getId(): InstanceIdentifier
     {
-        $validate = \array_reduce($acts, 
-            function ($previous, $item) {
-                if ($previous === false) {
-                    return false;
-                }
-                
-                return $item instanceof Act;
-            });
-        
-        if ($validate === false) {
-            throw new \UnexpectedValueException(sprintf("The contents of acts "
-                . "should implements %s", Act::class));
-        }
-        
-        $this->acts = $acts;
-        
+        return $this->root;
+    }
+
+    public function setId(InstanceIdentifier $code)
+    {
+        $this->root = $code;
         return $this;
     }
 
-    public function addAct(Act $act) 
-    {
-        $this->acts[] = $act;
-        return $this;
-    }
-    
-    
-    public function getTypeCode(): string
-    {
-        return 'COMP';
-    }
-        
+            
     protected function getElementTag(): string
     {
-        return 'entry';
+        return 'templateId';
     }
 
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
         $el = $this->createElement($doc);
-        
-        foreach ($this->getActs() as $act) {
-            $el->appendChild($act->toDOMElement($doc));
-        }
+        $this->getId()->setValueToElement($el, $doc);
         
         return $el;
     }
-
 }

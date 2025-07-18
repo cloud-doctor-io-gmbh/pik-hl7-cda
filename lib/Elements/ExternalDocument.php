@@ -1,8 +1,9 @@
 <?php
+
 /*
  * The MIT License
  *
- * Copyright 2017 Julien Fastré <julien.fastre@champs-libres.coop>.
+ * Copyright 2016 Julien Fastré <julien.fastre@champs-libres.coop>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,81 +23,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace PHPHealth\CDA\RIM\Act;
 
-use PHPHealth\CDA\Elements\AbstractElement;
-use PHPHealth\CDA\Elements\EntryRelationship;
-use PHPHealth\CDA\Elements\StatusCode;
-use PHPHealth\CDA\Elements\TemplateId;
-use PHPHealth\CDA\Elements\Text;
+namespace PHPHealth\CDA\Elements;
+
+use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\HasClassCode;
 use PHPHealth\CDA\HasMoodCodeInterface;
-use PHPHealth\CDA\DataType\Collection\Set;
-use PHPHealth\CDA\DataType\Boolean\Boolean;
-use PHPHealth\CDA\DataType\TextAndMultimedia\EncapsuledData;
-use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
-use PHPHealth\CDA\Elements\Code;
-use PHPHealth\CDA\DataType\Code\CodedValue;
 
-class ExternalAct extends AbstractElement implements HasClassCode, HasMoodCodeInterface
+/**
+ *
+ *
+ * @author Julien Fastré <julien.fastre@champs-libres.coop>
+ */
+class ExternalDocument extends AbstractElement implements HasClassCode, HasMoodCodeInterface
 {
     /**
-     * A unique identifier for the Act.
      *
-     * @var Set
-     */
-    protected $ids;
-    
-    /**
-     *
-     * @var CodedValue
-     */
-    protected $code;
-    
-    /**
-     *
-     * @var array 
+     * @var array
      */
     protected $templateIds;
 
     /**
-     *
-     * @var ?EncapsuledData
+     * @var RawText
      */
     protected $text;
-    
-    protected $moodCode = 'EVN';
-    
-    public function getIds()
-    {
-        return $this->ids;
-    }
 
-    public function setIds(Set $ids)
-    {
-        $this->ids = $ids;
-        return $this;
-    }
+    /**
+     * @var string
+     */
+    protected $moodCode;
 
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    public function setCode(CodedValue $code)
-    {
-        $this->code = $code;
-
-        return $this;
-    }
-    
     public function getTemplateIds()
     {
         return $this->templateIds;
     }
 
     /**
-     * 
+     *
      * @param InstanceIdentifier[] $templateIds
      * @return $this
      */
@@ -107,87 +70,72 @@ class ExternalAct extends AbstractElement implements HasClassCode, HasMoodCodeIn
             if ($carry === false) {
                 return false;
             }
-            
+
             return $current instanceof InstanceIdentifier;
         });
-        
+
         if ($result === false) {
             throw new \RuntimeException(sprintf("the templateIds must be "
                 . "instance of %s", InstanceIdentifier::class));
         }
-        
+
         $this->templateIds = $templateIds;
-        
-        
+
+
         return $this;
     }
 
     public function addTemplateId(InstanceIdentifier $id)
     {
         $this->templateIds[] = $id;
-        
+
         return $this;
     }
 
-    public function getText(): ?EncapsuledData
+    public function getText(): RawText
     {
         return $this->text;
     }
 
-    public function setText(?EncapsuledData $text): ?ExternalAct
+    public function setText(RawText $text): ExternalDocument
     {
         $this->text = $text;
         return $this;
     }
-            
-    public function getClassCode(): string
+
+    protected function getElementTag()
     {
-        return 'ACT';
-    }
-    
-    public function getMoodCode()
-    {
-        return $this->moodCode;
+        return 'externalDocument';
     }
 
-    public function setMoodCode(string $moodCode): ExternalAct
-    {
-        $this->moodCode = $moodCode;
-        return $this;
-    }
-
-    protected function getElementTag(): string
-    {
-        return 'externalAct';
-    }
-
-    public function toDOMElement(\DOMDocument $doc): \DOMElement
+    public function toDOMElement(\DOMDocument $doc)
     {
         $el = $this->createElement($doc);
-        
+
         if ($this->getTemplateIds() !== null) {
             foreach ($this->templateIds as $id) {
                 $el->appendChild((new TemplateId($id))->toDOMElement($doc));
             }
         }
 
-        if ($this->getIds() !== null) {
-            foreach ($this->getIds()->getIterator() as $id) {
-                /* @var $id InstanceIdentifier */
-                $el->appendChild((new \PHPHealth\CDA\Elements\Id($id))
-                    ->toDOMElement($doc));
-            }
-        }
+        $el->appendChild($this->text->toDOMElement($doc));
 
-        if ($this->getCode() !== null) {
-            $el->appendChild((new Code($this->getCode()))->toDOMElement($doc));
-        }
-
-        if ($this->getText() !== null) {
-            $el->appendChild((new Text($this->getText()))->toDOMElement($doc));
-        }
-        
         return $el;
     }
 
+    public function getClassCode(): string
+    {
+        return 'DOC';
+    }
+
+    public function getMoodCode()
+    {
+        return $this->moodCode;
+    }
+
+    public function setMoodCode(string $moodCode): ExternalDocument
+    {
+        $this->moodCode = $moodCode;
+        return $this;
+    }
 }

@@ -213,7 +213,7 @@ class ConceptDescriptor extends \PHPHealth\CDA\DataType\AnyType
 
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
-        if ($this->codeSystem !== null) {
+        if ($this->code !== null) {
             $el->setAttribute(CDA::NS_CDA . "code", $this->getCode());
         } else {
             $el->setAttribute(CDA::NS_CDA . 'nullFlavor', 'NA');

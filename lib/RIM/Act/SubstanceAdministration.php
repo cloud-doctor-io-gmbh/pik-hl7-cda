@@ -55,25 +55,25 @@ class SubstanceAdministration extends Act
     
     /**
      *
-     * @var Set|CodedWithEquivalents
+     * @var Set|CodedWithEquivalents|null
      */
     private $approachSiteCode;
     
     /**
      *
-     * @var Interval|PhysicalQuantity
+     * @var Interval|PhysicalQuantity|null
      */
     private $doseQuantity;
     
     /**
      *
-     * @var Interval|PhysicalQuantity
+     * @var Interval|PhysicalQuantity|null
      */
     private $rateQuantity;
 
     /**
      *
-     * @var IntegerNumber
+     * @var ?IntegerNumber
      */
     private $repeatNumber;
     
@@ -108,7 +108,7 @@ class SubstanceAdministration extends Act
 
     /**
      * 
-     * @return Set|CodedWithEquivalents
+     * @return Set|CodedWithEquivalents|null
      */
     public function getApproachSiteCode()
     {
@@ -117,7 +117,7 @@ class SubstanceAdministration extends Act
 
     /**
      * 
-     * @return Interval|PhysicalQuantity
+     * @return Interval|PhysicalQuantity|null
      */
     public function getDoseQuantity()
     {
@@ -126,7 +126,7 @@ class SubstanceAdministration extends Act
 
     /**
      * 
-     * @return Interval|PhysicalQuantity
+     * @return Interval|PhysicalQuantity|null
      */
     public function getRateQuantity()
     {
@@ -134,9 +134,9 @@ class SubstanceAdministration extends Act
     }
 
     /**
-     * @return IntegerNumber
+     * @return ?IntegerNumber
      */
-    public function getRepeatNumber(): IntegerNumber
+    public function getRepeatNumber(): ?IntegerNumber
     {
         return $this->repeatNumber;
     }
@@ -152,7 +152,7 @@ class SubstanceAdministration extends Act
 
     /**
      * 
-     * @param CodedWithEquivalents $routeCode
+     * @param CodedWithEquivalents|null $routeCode
      * @return $this
      */
     public function setRouteCode(CodedWithEquivalents $routeCode)
@@ -163,7 +163,7 @@ class SubstanceAdministration extends Act
 
     /**
      * 
-     * @param Set|CodedWithEquivalents $approachSiteCode
+     * @param Set|CodedWithEquivalents|null $approachSiteCode
      * @return $this
      */
     public function setApproachSiteCode($approachSiteCode)
@@ -174,7 +174,7 @@ class SubstanceAdministration extends Act
 
     /**
      * 
-     * @param Interval|PhysicalQuantity $doseQuantity
+     * @param Interval|PhysicalQuantity|null $doseQuantity
      * @return $this
      */
     public function setDoseQuantity($doseQuantity)
@@ -185,7 +185,7 @@ class SubstanceAdministration extends Act
 
     /**
      * 
-     * @param Interval|PhysicalQuantity $rateQuantity
+     * @param Interval|PhysicalQuantity|null $rateQuantity
      * @return $this
      */
     public function setRateQuantity($rateQuantity)
@@ -194,7 +194,7 @@ class SubstanceAdministration extends Act
         return $this;
     }
     
-    public function setRepeatNumber(IntegerNumber $repeatNumber): SubstanceAdministration
+    public function setRepeatNumber(?IntegerNumber $repeatNumber): SubstanceAdministration
     {
         $this->repeatNumber = $repeatNumber;
         return $this;

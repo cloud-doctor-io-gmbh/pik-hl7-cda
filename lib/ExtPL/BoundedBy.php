@@ -4,7 +4,6 @@ namespace PHPHealth\CDA\ExtPL;
 
 use PHPHealth\CDA\DataType\Collection\Set;
 use PHPHealth\CDA\Elements\AbstractElement;
-use PHPHealth\CDA\Elements\TemplateId;
 use PHPHealth\CDA\HasTypeCode;
 
 class BoundedBy extends AbstractExtPLElement implements HasTypeCode
@@ -62,7 +61,7 @@ class BoundedBy extends AbstractExtPLElement implements HasTypeCode
     {
         $el = $this->createElement($doc);
 
-        $this->templateIds->setValueToElement($el);
+        $this->templateIds->setValueToElement($el, $doc);
         $el->appendChild($this->reimbursementRelatedContract->toDOMElement($doc));
 
         return $el;

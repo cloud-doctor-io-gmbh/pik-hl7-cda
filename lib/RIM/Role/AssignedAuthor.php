@@ -24,12 +24,15 @@
  */
 namespace PHPHealth\CDA\RIM\Role;
 
+use PHPHealth\CDA\ClinicalDocument;
 use PHPHealth\CDA\DataType\Collection\Set;
+use PHPHealth\CDA\ExtPL\BoundedBy;
 use PHPHealth\CDA\RIM\Entity\Person;
 use PHPHealth\CDA\DataType\Code\CodedWithEquivalents;
 use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\Elements\Id;
 use PHPHealth\CDA\RIM\Entity\RepresentedOrganization;
+use PHPHealth\CDA\RIM\Participation\Author;
 
 /**
  * 
@@ -72,6 +75,16 @@ class AssignedAuthor extends Role
      * @var RepresentedOrganization
      */
     protected $representedOrganization;
+
+    /**
+     * @var ?BoundedBy
+     */
+    private $boundedBy = null;
+
+    /**
+     * @var ?string
+     */
+    private $xsiType = null;
     
     /**
      * 
@@ -185,6 +198,28 @@ class AssignedAuthor extends Role
         return $this->representedOrganization !== null;
     }
 
+    public function getBoundedBy(): ?BoundedBy
+    {
+        return $this->boundedBy;
+    }
+
+    public function setBoundedBy(?BoundedBy $boundedBy): AssignedAuthor
+    {
+        $this->boundedBy = $boundedBy;
+        return $this;
+    }
+
+    public function getXsiType(): ?string
+    {
+        return $this->xsiType;
+    }
+
+    public function setXsiType(?string $xsiType): AssignedAuthor
+    {
+        $this->xsiType = $xsiType;
+        return $this;
+    }
+
     protected function getElementTag(): string
     {
         return 'assignedAuthor';
@@ -207,6 +242,14 @@ class AssignedAuthor extends Role
 
         if ($this->hasRepresentedOrganization()) {
             $el->appendChild($this->representedOrganization->toDOMElement($doc));
+        }
+
+        if ($this->getBoundedBy() !== null) {
+            $el->appendChild($this->getBoundedBy()->toDOMElement($doc));
+        }
+
+        if ($this->getXsiType() !== null) {
+            $el->setAttributeNS(ClinicalDocument::NS_XSI_URI, 'xsi:type', $this->getXsiType());
         }
         
         return $el;

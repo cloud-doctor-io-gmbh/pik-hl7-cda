@@ -63,11 +63,6 @@ class Author extends Participation
      */
     private $functionCode;
 
-    /**
-     * @var ?BoundedBy
-     */
-    private $boundedBy = null;
-
     public function __construct(
         TimeStamp $time,
         $assignedAuthors,
@@ -132,17 +127,6 @@ class Author extends Participation
         return $this;
     }
 
-    public function getBoundedBy(): ?BoundedBy
-    {
-        return $this->boundedBy;
-    }
-
-    public function setBoundedBy(?BoundedBy $boundedBy): Author
-    {
-        $this->boundedBy = $boundedBy;
-        return $this;
-    }
-
     protected function getElementTag(): string
     {
         return 'author';
@@ -169,10 +153,6 @@ class Author extends Participation
         
         foreach ($this->assignedAuthors as $assignedAuthor) {
             $el->appendChild($assignedAuthor->toDOMElement($doc));
-        }
-
-        if ($this->getBoundedBy() !== null) {
-            $el->appendChild($this->getBoundedBy()->toDOMElement($doc));
         }
         
         return $el;

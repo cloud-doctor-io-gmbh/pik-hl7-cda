@@ -3,31 +3,32 @@
 namespace PHPHealth\CDA\Elements;
 
 use PHPHealth\CDA\DataType\Address\PostalAddress;
+use PHPHealth\CDA\HasTypeCode;
 use PHPHealth\CDA\RIM\Act\ExternalAct;
 
-class Reference extends AbstractElement
+class Reference extends AbstractElement implements HasTypeCode
 {
     /**
-     * @var ExternalAct
+     * @var ExternalAct|ExternalDocument
      */
-    protected $externalAct;
+    protected $externalReference;
 
     /**
-     * @param ExternalAct $externalAct
+     * @param ExternalAct|ExternalDocument $externalReference
      */
-    public function __construct(ExternalAct $externalAct)
+    public function __construct(ExternalAct|ExternalDocument $externalReference)
     {
-        $this->externalAct = $externalAct;
+        $this->externalReference = $externalReference;
     }
 
-    public function getExternalAct(): ExternalAct
+    public function getExternalReference(): ExternalAct|ExternalDocument
     {
-        return $this->externalAct;
+        return $this->externalReference;
     }
 
-    public function setExternalAct(ExternalAct $externalAct): Reference
+    public function setExternalReference(ExternalAct|ExternalDocument $externalReference): Reference
     {
-        $this->externalAct = $externalAct;
+        $this->externalReference = $externalReference;
         return $this;
     }
 
@@ -40,8 +41,13 @@ class Reference extends AbstractElement
     {
         $el =  $this->createElement($doc);
 
-        $el->appendChild($this->externalAct->toDOMElement($doc));
+        $el->appendChild($this->externalReference->toDOMElement($doc));
 
         return $el;
+    }
+
+    public function getTypeCode()
+    {
+        return 'REFR';
     }
 }

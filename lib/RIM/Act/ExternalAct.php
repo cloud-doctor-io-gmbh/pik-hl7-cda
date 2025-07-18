@@ -26,27 +26,19 @@ namespace PHPHealth\CDA\RIM\Act;
 
 use PHPHealth\CDA\Elements\AbstractElement;
 use PHPHealth\CDA\Elements\EntryRelationship;
-use PHPHealth\CDA\Elements\Reference;
 use PHPHealth\CDA\Elements\StatusCode;
 use PHPHealth\CDA\Elements\TemplateId;
 use PHPHealth\CDA\Elements\Text;
 use PHPHealth\CDA\HasClassCode;
 use PHPHealth\CDA\HasMoodCodeInterface;
 use PHPHealth\CDA\DataType\Collection\Set;
-use PHPHealth\CDA\DataType\Code\CodedWithEquivalents;
 use PHPHealth\CDA\DataType\Boolean\Boolean;
 use PHPHealth\CDA\DataType\TextAndMultimedia\EncapsuledData;
 use PHPHealth\CDA\DataType\Identifier\InstanceIdentifier;
 use PHPHealth\CDA\Elements\Code;
 use PHPHealth\CDA\DataType\Code\CodedValue;
 
-/**
- * A record of something that is being done, has been done, can be done, 
- * or is intended or requested to be done.
- *
- * @author Julien Fastré <julien.fastre@champs-libres.coop>
- */
-class Act extends AbstractElement implements HasClassCode, HasMoodCodeInterface
+class ExternalAct extends AbstractElement implements HasClassCode, HasMoodCodeInterface
 {
     /**
      * A unique identifier for the Act.
@@ -63,95 +55,21 @@ class Act extends AbstractElement implements HasClassCode, HasMoodCodeInterface
     
     /**
      *
-     * @var Boolean
+     * @var array 
      */
-    protected $negationInd;
-    
+    protected $templateIds;
+
     /**
      *
      * @var EncapsuledData
      */
     protected $text;
     
-    /**
-     *
-     * @var StatusCode|null
-     */
-    protected $statusCode = null;
-    
-    protected $effectiveTime = array();
-
-    /**
-     * @var Performer2|null
-     */
-    protected $performer = null;
-    
-    /**
-     *
-     * @var array 
-     */
-    protected $templateIds;
-    
     protected $moodCode = 'EVN';
-
-    /**
-     * @var Set
-     */
-    protected $entryRelationships;
-
-    /**
-     * @var ?Reference
-     */
-    protected $reference;
-
-    public function __construct()
-    {
-        $this->entryRelationships = new Set(EntryRelationship::class);
-    }
     
     public function getIds()
     {
         return $this->ids;
-    }
-
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    public function getNegationInd(): Boolean
-    {
-        return $this->negationInd;
-    }
-
-    public function getText()
-    {
-        return $this->text;
-    }
-
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    public function getEffectiveTime()
-    {
-        return $this->effectiveTime;
-    }
-
-    public function getPerformer(): Performer2
-    {
-        return $this->performer;
-    }
-    
-    public function getTemplateIds()
-    {
-        return $this->templateIds;
-    }
-
-    public function getEntryRelationships(): Set
-    {
-        return $this->entryRelationships;
     }
 
     public function setIds(Set $ids)
@@ -160,46 +78,21 @@ class Act extends AbstractElement implements HasClassCode, HasMoodCodeInterface
         return $this;
     }
 
+    public function getCode()
+    {
+        return $this->code;
+    }
+
     public function setCode(CodedValue $code)
     {
         $this->code = $code;
-        
+
         return $this;
     }
-
-    public function setNegationInd(Boolean $negationInd)
+    
+    public function getTemplateIds()
     {
-        $this->negationInd = $negationInd;
-        return $this;
-    }
-
-    public function setText(EncapsuledData $text)
-    {
-        $this->text = $text;
-        return $this;
-    }
-
-    public function setStatusCode(StatusCode $statusCode)
-    {
-        $this->statusCode = $statusCode;
-        return $this;
-    }
-
-    public function setEffectiveTime($effectiveTime, $append = true)
-    {
-        if ($append) {
-            $this->effectiveTime[] = $effectiveTime;
-        } else {
-            $this->effectiveTime = array($effectiveTime);
-        }
-        
-        return $this;
-    }
-
-    public function setPerformer(Performer2 $performer): Act
-    {
-        $this->performer = $performer;
-        return $this;
+        return $this->templateIds;
     }
 
     /**
@@ -236,16 +129,14 @@ class Act extends AbstractElement implements HasClassCode, HasMoodCodeInterface
         return $this;
     }
 
-    public function setEntryRelationships(Set $entryRelationships): Act
+    public function getText(): EncapsuledData
     {
-        $entryRelationships->checkContainsOrThrow(EntryRelationship::class);
-        $this->entryRelationships = $entryRelationships;
-        return $this;
+        return $this->text;
     }
 
-    public function addEntryRelationship(EntryRelationship $entryRelationship): Act
+    public function setText(EncapsuledData $text): ExternalAct
     {
-        $this->entryRelationships->add($entryRelationship);
+        $this->text = $text;
         return $this;
     }
             
@@ -259,26 +150,15 @@ class Act extends AbstractElement implements HasClassCode, HasMoodCodeInterface
         return $this->moodCode;
     }
 
-    public function setMoodCode(string $moodCode): Act
+    public function setMoodCode(string $moodCode): ExternalAct
     {
         $this->moodCode = $moodCode;
         return $this;
     }
 
-    public function getReference(): ?Reference
-    {
-        return $this->reference;
-    }
-
-    public function setReference(?Reference $reference): Act
-    {
-        $this->reference = $reference;
-        return $this;
-    }
-
     protected function getElementTag(): string
     {
-        return 'act';
+        return 'externalAct';
     }
 
     public function toDOMElement(\DOMDocument $doc): \DOMElement
@@ -299,26 +179,8 @@ class Act extends AbstractElement implements HasClassCode, HasMoodCodeInterface
             }
         }
 
-        if ($this->getCode() !== null) {
-            $el->appendChild((new Code($this->getCode()))->toDOMElement($doc));
-        }
-        
         if ($this->getText() !== null) {
             $el->appendChild((new Text($this->getText()))->toDOMElement($doc));
-        }
-
-        if ($this->getStatusCode() !== null) {
-            $el->appendChild($this->getStatusCode()->toDOMElement($doc));
-        }
-
-        if ($this->performer !== null) {
-            $el->appendChild($this->performer->toDOMElement($doc));
-        }
-
-        $this->entryRelationships->setValueToElement($el, $doc);
-
-        if ($this->reference !== null) {
-            $el->appendChild($this->reference->toDOMElement($doc));
         }
         
         return $el;

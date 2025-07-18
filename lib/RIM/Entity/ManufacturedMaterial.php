@@ -36,21 +36,21 @@ use PHPHealth\CDA\Pharm\AsContent;
 class ManufacturedMaterial extends DrugOrMaterial
 {
     /**
-     * @var CodedValue
+     * @var ?CodedValue
      */
-    protected $code;
+    protected $code = null;
 
     /**
-     * @var AsContent
+     * @var ?AsContent
      */
-    protected $asContent;
+    protected $asContent = null;
 
     /**
      * @var Set
      */
     protected $activeIngredients;
     
-    public function __construct(CodedValue $code, AsContent $asContent)
+    public function __construct(?CodedValue $code = null, ?AsContent $asContent = null)
     {
         $this->code = $code;
         $this->asContent = $asContent;
@@ -62,7 +62,7 @@ class ManufacturedMaterial extends DrugOrMaterial
         return $this->code;
     }
 
-    public function setCode(CodedValue $code)
+    public function setCode(?CodedValue $code)
     {
         $this->code = $code;
         return $this;
@@ -73,7 +73,7 @@ class ManufacturedMaterial extends DrugOrMaterial
         return $this->asContent;
     }
 
-    public function setAsContent(AsContent $asContent): ManufacturedMaterial
+    public function setAsContent(?AsContent $asContent): ManufacturedMaterial
     {
         $this->asContent = $asContent;
         return $this;
@@ -103,6 +103,11 @@ class ManufacturedMaterial extends DrugOrMaterial
     public function toDOMElement(\DOMDocument $doc): \DOMElement
     {
         $el = $this->createElement($doc);
+
+        if ($this->code === null && $this->asContent === null) {
+            $el->setAttribute('nullFlavor', 'NA');
+            return $el;
+        }
 
         $this->getTemplateIds()?->setValueToElement($el, $doc);
         $el->appendChild((new Code($this->getCode()))->toDOMElement($doc));

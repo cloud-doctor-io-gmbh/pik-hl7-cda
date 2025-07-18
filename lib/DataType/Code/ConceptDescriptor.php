@@ -67,7 +67,7 @@ class ConceptDescriptor extends \PHPHealth\CDA\DataType\AnyType
     
     /**
      *
-     * @var string
+     * @var ?string
      */
     private $code;
 
@@ -213,7 +213,12 @@ class ConceptDescriptor extends \PHPHealth\CDA\DataType\AnyType
 
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
-        $el->setAttribute(CDA::NS_CDA."code", $this->getCode());
+        if ($this->codeSystem !== null) {
+            $el->setAttribute(CDA::NS_CDA . "code", $this->getCode());
+        } else {
+            $el->setAttribute(CDA::NS_CDA . 'nullFlavor', 'NA');
+            return;
+        }
         
         if ($this->hasDisplayName()) {
             $el->setAttribute("displayName", $this->getDisplayName());

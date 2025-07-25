@@ -40,6 +40,11 @@ class PostalAddress extends AnyType
     private $streetName;
 
     /**
+     * @var ?CharacterString
+     */
+    private $unitId;
+
+    /**
      * @param CharacterString $country
      * @param CharacterString $city
      * @param CharacterString $postalCode
@@ -51,13 +56,15 @@ class PostalAddress extends AnyType
         CharacterString $city = null,
         CharacterString $postalCode = null,
         CharacterString $houseNumber = null,
-        CharacterString $streetName = null
+        CharacterString $streetName = null,
+        CharacterString $unitId = null
     ) {
         $this->country = $country;
         $this->city = $city;
         $this->postalCode = $postalCode;
         $this->houseNumber = $houseNumber;
         $this->streetName = $streetName;
+        $this->unitId = $unitId;
     }
 
 
@@ -116,7 +123,16 @@ class PostalAddress extends AnyType
         return $this;
     }
 
+    public function getUnitId(): ?CharacterString
+    {
+        return $this->unitId;
+    }
 
+    public function setUnitId(?CharacterString $unitId): PostalAddress
+    {
+        $this->unitId = $unitId;
+        return $this;
+    }
 
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
@@ -147,6 +163,12 @@ class PostalAddress extends AnyType
         if ($this->getStreetName() !== null) {
             $subEl = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'streetName');
             $subEl->appendChild($doc->createTextNode($this->getStreetName()->getContent()));
+            $el->appendChild($subEl);
+        }
+
+        if ($this->getUnitId() !== null) {
+            $subEl = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'unitID');
+            $subEl->appendChild($doc->createTextNode($this->getUnitId()->getContent()));
             $el->appendChild($subEl);
         }
     }

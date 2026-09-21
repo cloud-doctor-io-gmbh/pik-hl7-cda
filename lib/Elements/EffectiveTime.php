@@ -42,7 +42,7 @@ class EffectiveTime extends AbstractElement
 {
     /**
      *
-     * @var TimeStamp|PeriodicIntervalOfTime|PhysicalQuantityInterval|PhysicalQuantity
+     * @var TimeStamp|IntervalOfTime|PeriodicIntervalOfTime|PhysicalQuantityInterval|PhysicalQuantity
      */
     protected $value;
     

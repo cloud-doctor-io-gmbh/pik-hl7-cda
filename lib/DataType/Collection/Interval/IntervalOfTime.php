@@ -26,6 +26,7 @@ namespace PHPHealth\CDA\DataType\Collection\Interval;
 
 use PHPHealth\CDA\ClinicalDocument as CDA;
 use PHPHealth\CDA\DataType\Quantity\DateAndTime\TimeStamp;
+use PHPHealth\CDA\DataType\Quantity\PhysicalQuantity\PhysicalQuantity;
 
 
 /**
@@ -46,11 +47,17 @@ class IntervalOfTime extends AbstractInterval
      * @var TimeStamp|null
      */
     private $high;
+
+    /**
+     * @var PhysicalQuantity|null
+     */
+    private $width;
     
-    function __construct(TimeStamp|null $low = null, TimeStamp|null $high = null)
+    function __construct(TimeStamp|null $low = null, TimeStamp|null $high = null, PhysicalQuantity|null $width = null)
     {
         $this->setHigh($high);
         $this->setLow($low);
+        $this->setWidth($width);
     }
 
     
@@ -62,6 +69,11 @@ class IntervalOfTime extends AbstractInterval
     function getHigh(): TimeStamp
     {
         return $this->high;
+    }
+
+    function getWidth(): PhysicalQuantity
+    {
+        return $this->width;
     }
 
     function setLow(TimeStamp|null $low)
@@ -76,25 +88,38 @@ class IntervalOfTime extends AbstractInterval
         return $this;
     }
 
+    function setWidth(PhysicalQuantity|null $width)
+    {
+        $this->width = $width;
+        return $this;
+    }
         
     public function setValueToElement(\DOMElement &$el, \DOMDocument $doc = null)
     {
-        $low = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'low');
-        if ($this->low !== null) {
-            $this->low->setValueToElement($low, $doc);
+        if ($this->width !== null) {
+            $width = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA . 'width');
+            $this->width->setValueToElement($width, $doc);
+
+            $el->appendChild($width);
         } else {
-            $low->setAttribute('nullFlavor', 'NA');
+            $low = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA . 'low');
+            if ($this->low !== null) {
+                $this->low->setValueToElement($low, $doc);
+            } else {
+                $low->setAttribute('nullFlavor', 'NA');
+            }
+
+            $high = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA . 'high');
+            if ($this->high !== null) {
+                $this->high->setValueToElement($high, $doc);
+            } else {
+                $high->setAttribute('nullFlavor', 'NA');
+            }
+
+            $el->appendChild($low);
+            $el->appendChild($high);
         }
-        
-        $high = $doc->createElementNS(CDA::NS_CDA_URI, CDA::NS_CDA.'high');
-        if ($this->high !== null) {
-            $this->high->setValueToElement($high, $doc);
-        } else {
-            $high->setAttribute('nullFlavor', 'NA');
-        }
-        
-        $el->appendChild($low);
-        $el->appendChild($high);
+
         $el->setAttributeNS(CDA::NS_XSI_URI, 'xsi:type', 'IVL_TS');
     }
 }

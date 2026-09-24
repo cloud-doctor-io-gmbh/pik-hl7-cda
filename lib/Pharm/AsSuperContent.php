@@ -4,7 +4,7 @@ namespace PHPHealth\CDA\Pharm;
 
 use PHPHealth\CDA\HasClassCode;
 
-class AsSuperContent extends AbstractPharmacyElement
+class AsSuperContent extends AbstractPharmacyElement implements HasClassCode
 {
     /**
      * @var ContainerPackagedMedicine
@@ -42,5 +42,10 @@ class AsSuperContent extends AbstractPharmacyElement
         $el->appendChild($this->containerPackagedMedicine->toDOMElement($doc));
 
         return $el;
+    }
+
+    public function getClassCode()
+    {
+        return 'CONT';
     }
 }
